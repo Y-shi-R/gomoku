@@ -1,0 +1,38 @@
+; 五子棋 —— Godot 4.x / GDScript 小游戏
+; 纯代码实现：无外部插件、无外部图片/音频资源（音效由代码合成）
+
+config_version=5
+
+[application]
+
+config/name="五子棋"
+config/description="15×15 五子棋：双人对战 / 人机对战，含悔棋、比分、程序化音效。"
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameState="*res://scripts/game_state.gd"
+Sfx="*res://scripts/sfx.gd"
+ScreenFit="*res://scripts/screen_fit.gd"
+
+[display]
+
+window/size/viewport_width=900
+window/size/viewport_height=1020
+window/size/window_width_override=810
+window/size/window_height_override=918
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+
+[gui]
+
+theme/custom="res://themes/main_theme.tres"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.109804, 0.0784314, 0.0588235, 1)

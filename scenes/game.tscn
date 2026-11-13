@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://bvbb6u30nrihe"]
+
+[ext_resource type="Script" uid="uid://dc686ei85xabc" path="res://scripts/game.gd" id="1_lnu2h"]
+[ext_resource type="Script" uid="uid://dqsll06jlgabu" path="res://scripts/turn_indicator.gd" id="2_lbhrr"]
+[ext_resource type="Script" uid="uid://b2pevpf44cnfi" path="res://scripts/board_view.gd" id="3_iywne"]
+[ext_resource type="StyleBox" path="res://themes/panel_result.tres" id="4_lbhrr"]
+
+[node name="Game" type="Control" unique_id=1337344299]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_lnu2h")
+
+[node name="BG" type="ColorRect" parent="." unique_id=1394394898]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.086, 0.063, 0.047, 1)
+
+[node name="Root" type="MarginContainer" parent="." unique_id=1384926953]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="Layout" type="VBoxContainer" parent="Root" unique_id=1700087042]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="TopBar" type="PanelContainer" parent="Root/Layout" unique_id=157805842]
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+
+[node name="TopBox" type="HBoxContainer" parent="Root/Layout/TopBar" unique_id=706734051]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="TurnBox" type="HBoxContainer" parent="Root/Layout/TopBar/TopBox" unique_id=172521646]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="TurnStone" type="Control" parent="Root/Layout/TopBar/TopBox/TurnBox" unique_id=1058216885]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+script = ExtResource("2_lbhrr")
+
+[node name="TurnLabel" type="Label" parent="Root/Layout/TopBar/TopBox/TurnBox" unique_id=1113206504]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "黑棋回合"
+
+[node name="ScoreLabel" type="Label" parent="Root/Layout/TopBar/TopBox" unique_id=231346798]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.68, 1)
+theme_override_font_sizes/font_size = 18
+text = "黑 0  ·  平 0  ·  白 0"
+
+[node name="ModeLabel" type="Label" parent="Root/Layout/TopBar/TopBox" unique_id=1479883650]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.66, 0.62, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="BoardArea" type="CenterContainer" parent="Root/Layout" unique_id=1453668710]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Board" type="Control" parent="Root/Layout/BoardArea" unique_id=2014082843]
+custom_minimum_size = Vector2(736, 736)
+layout_mode = 2
+script = ExtResource("3_iywne")
+
+[node name="BottomBar" type="PanelContainer" parent="Root/Layout" unique_id=305890244]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Layout/BottomBar" unique_id=1863687065]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="RestartButton" type="Button" parent="Root/Layout/BottomBar/Buttons" unique_id=1493502245]
+layout_mode = 2
+focus_mode = 0
+text = "重新开始"
+
+[node name="UndoButton" type="Button" parent="Root/Layout/BottomBar/Buttons" unique_id=1276865936]
+layout_mode = 2
+focus_mode = 0
+text = "悔棋"
+
+[node name="SoundButton" type="Button" parent="Root/Layout/BottomBar/Buttons" unique_id=1766419426]
+layout_mode = 2
+focus_mode = 0
+text = "音效 开"
+
+[node name="MenuButton" type="Button" parent="Root/Layout/BottomBar/Buttons" unique_id=2141418681]
+layout_mode = 2
+focus_mode = 0
+text = "返回主菜单"
+
+[node name="ResultPanel" type="PanelContainer" parent="." unique_id=439228635]
+visible = false
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -112.0
+offset_right = 190.0
+offset_bottom = 112.0
+theme_override_styles/panel = ExtResource("4_lbhrr")
+
+[node name="ResultBox" type="VBoxContainer" parent="ResultPanel" unique_id=2050684687]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResultTitle" type="Label" parent="ResultPanel/ResultBox" unique_id=1323524980]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 40
+text = "黑棋胜利"
+horizontal_alignment = 1
+
+[node name="ResultDetail" type="Label" parent="ResultPanel/ResultBox" unique_id=2132895827]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.62, 0.72, 0.9)
+theme_override_font_sizes/font_size = 16
+text = "五子连珠"
+horizontal_alignment = 1
+
+[node name="ResultButtons" type="HBoxContainer" parent="ResultPanel/ResultBox" unique_id=1097473439]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="AgainButton" type="Button" parent="ResultPanel/ResultBox/ResultButtons" unique_id=189593426]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "再来一局"
+
+[node name="ResultMenuButton" type="Button" parent="ResultPanel/ResultBox/ResultButtons" unique_id=82534913]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+text = "返回主菜单"

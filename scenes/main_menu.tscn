@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://bhvuxeq3njud2"]
+
+[ext_resource type="Script" uid="uid://dg75bd2lwsf8k" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+
+[node name="MainMenu" type="Control" unique_id=42796952]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_l6cm7")
+
+[node name="BG" type="ColorRect" parent="." unique_id=1700146998]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.086, 0.063, 0.047, 1)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=268301548]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CenterBox" type="VBoxContainer" parent="Center" unique_id=1164095200]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="TitleBox" type="VBoxContainer" parent="Center/CenterBox" unique_id=851964735]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Center/CenterBox/TitleBox" unique_id=1607293112]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.78, 0.87, 1)
+theme_override_font_sizes/font_size = 58
+text = "五 子 棋"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/CenterBox/TitleBox" unique_id=2122415683]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.55, 0.62, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "GOMOKU · 15 × 15"
+horizontal_alignment = 1
+
+[node name="MainBox" type="VBoxContainer" parent="Center/CenterBox" unique_id=2138285286]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ModeLabel" type="Label" parent="Center/CenterBox/MainBox" unique_id=809448492]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.66, 0.72, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "对局模式"
+horizontal_alignment = 1
+
+[node name="ModeRow" type="HBoxContainer" parent="Center/CenterBox/MainBox" unique_id=2012228409]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="PvpButton" type="Button" parent="Center/CenterBox/MainBox/ModeRow" unique_id=10360715]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 19
+text = "双人对战"
+
+[node name="PveButton" type="Button" parent="Center/CenterBox/MainBox/ModeRow" unique_id=16335760]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 19
+text = "人机对战"
+
+[node name="ColorLabel" type="Label" parent="Center/CenterBox/MainBox" unique_id=340991597]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.66, 0.72, 0.8)
+theme_override_font_sizes/font_size = 15
+text = "执子颜色（仅人机对战生效）"
+horizontal_alignment = 1
+
+[node name="ColorRow" type="HBoxContainer" parent="Center/CenterBox/MainBox" unique_id=1096813242]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BlackButton" type="Button" parent="Center/CenterBox/MainBox/ColorRow" unique_id=1344656161]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 19
+text = "执黑先行"
+
+[node name="WhiteButton" type="Button" parent="Center/CenterBox/MainBox/ColorRow" unique_id=14299921]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 19
+text = "执白后行"
+
+[node name="StartButton" type="Button" parent="Center/CenterBox/MainBox" unique_id=1324895541]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 22
+text = "开 始 对 局"
+
+[node name="Footer" type="VBoxContainer" parent="Center/CenterBox" unique_id=801980236]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Hint" type="Label" parent="Center/CenterBox/Footer" unique_id=857486535]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.48, 0.55, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "黑棋先手 · 五子连珠即胜 · 无禁手"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="Center/CenterBox/Footer" unique_id=1590926542]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.55, 0.6, 0.85)
+theme_override_font_sizes/font_size = 14
+text = "比分   黑 0 : 0 白   平局 0"
+horizontal_alignment = 1
