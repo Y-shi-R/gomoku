@@ -5,6 +5,8 @@ extends Control
 ## 选中的按钮会被手动标成金黄高亮（普通 Button 没有「锁定选中」状态）。
 
 const GAME_SCENE := "res://scenes/game.tscn"
+## 用 preload 引用棋盘常量，避免依赖 .godot 全局类名缓存
+const BoardScript := preload("res://scripts/board_logic.gd")
 
 ## 选中/未选中按钮的颜色配置
 const COLOR_SELECTED_BG := Color(0.757, 0.549, 0.259)
@@ -35,7 +37,7 @@ func _refresh_ui() -> void:
 	_style_toggle(_pvp_button, is_pvp)
 	_style_toggle(_pve_button, not is_pvp)
 
-	var is_black: bool = GameState.human_color == GomokuBoard.BLACK
+	var is_black: bool = GameState.human_color == BoardScript.BLACK
 	_style_toggle(_black_button, is_black)
 	_style_toggle(_white_button, not is_black)
 
@@ -76,17 +78,17 @@ func _on_pve_pressed() -> void:
 
 
 func _on_black_pressed() -> void:
-	GameState.human_color = GomokuBoard.BLACK
-	Sfx.play_place(GomokuBoard.BLACK)
+	GameState.human_color = BoardScript.BLACK
+	Sfx.play_place(BoardScript.BLACK)
 	_refresh_ui()
 
 
 func _on_white_pressed() -> void:
-	GameState.human_color = GomokuBoard.WHITE
-	Sfx.play_place(GomokuBoard.WHITE)
+	GameState.human_color = BoardScript.WHITE
+	Sfx.play_place(BoardScript.WHITE)
 	_refresh_ui()
 
 
 func _on_start_pressed() -> void:
-	Sfx.play_place(GomokuBoard.BLACK)
+	Sfx.play_place(BoardScript.BLACK)
 	get_tree().change_scene_to_file(GAME_SCENE)

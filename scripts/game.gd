@@ -8,8 +8,13 @@ extends Control
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const AI_THINK_DELAY := 0.42      ## AI「思考」延时（秒），让玩家看得清
 
-var board: GomokuBoard                          ## 逻辑棋盘
-var current_player: int = GomokuBoard.BLACK     ## 当前该谁下
+## 用 preload 显式引用脚本类，避免依赖 .godot 全局类名缓存
+## （全新克隆首次运行时缓存可能尚未生成，用 class_name 会报「未声明标识符」）
+const BoardScript := preload("res://scripts/board_logic.gd")
+const AIScript := preload("res://scripts/ai_player.gd")
+
+var board: RefCounted                         ## 逻辑棋盘（GomokuBoard 实例）
+var current_player: int = 1                   ## 当前该谁下：1=黑 2=白
 var game_over := false
 
 ## 当前对局中 AI 的颜色（双人模式下为 0）
@@ -40,7 +45,7 @@ var _ai_pending := false
 
 func _ready() -> void:
 	# 逻辑层
-	board = GomokuBoard.new()
+	board = BoardScript.new()
 	# 表现层绑定逻辑层
 	_board_view.bind_board(board)
 	_board_view.point_clicked.connect(_on_point_clicked)
@@ -68,12 +73,12 @@ func _start_new_round() -> void:
 	_round_counted = false
 	_round_winner = 0
 	_result_panel.visible = false
-	current_player = GomokuBoard.BLACK
+	current_player = BoardScript.BLACK
 
 	# 人机模式：根据玩家执子颜色推算 AI 颜色
 	ai_color = 0
 	if GameState.mode == GameState.Mode.PVE:
-		ai_color = GomokuBoard.WHITE if GameState.human_color == GomokuBoard.BLACK else GomokuBoard.BLACK
+		ai_color = BoardScript.WHITE if GameState.human_color == BoardScript.BLACK else BoardScript.BLACK
 
 	_refresh_hud()
 	_maybe_start_ai_turn()
@@ -82,7 +87,7 @@ func _start_new_round() -> void:
 ## 刷新顶部栏（当前回合 + 比分 + 悔棋按钮可用性 + 音效按钮文案）。
 func _refresh_hud() -> void:
 	if not game_over:
-		var is_black: bool = current_player == GomokuBoard.BLACK
+		var is_black: bool = current_player == BoardScript.BLACK
 		var stone_name := "黑棋" if is_black else "白棋"
 		var turn_text := stone_name + "回合"
 		# 人机模式下区分「你」和「电脑」
@@ -98,7 +103,7 @@ func _refresh_hud() -> void:
 	if ai_color == 0:
 		_mode_label.text = "双人对战"
 	else:
-		var mine := "黑" if GameState.human_color == GomokuBoard.BLACK else "白"
+		var mine := "黑" if GameState.human_color == BoardScript.BLACK else "白"
 		_mode_label.text = "人机对战 · 你执%s" % mine
 
 
@@ -126,7 +131,7 @@ func _place(row: int, col: int) -> void:
 		return
 	Sfx.play_place(current_player)
 
-	var win_cells := board.check_winner(row, col, current_player)
+	var win_cells: Array = board.check_winner(row, col, current_player)
 	if not win_cells.is_empty():
 		_finish_round(current_player, win_cells)
 		return
@@ -134,7 +139,7 @@ func _place(row: int, col: int) -> void:
 		_finish_round(0, [])
 		return
 
-	current_player = GomokuBoard.WHITE if current_player == GomokuBoard.BLACK else GomokuBoard.BLACK
+	current_player = BoardScript.WHITE if current_player == BoardScript.BLACK else BoardScript.BLACK
 	_refresh_hud()
 	_maybe_start_ai_turn()
 
@@ -142,7 +147,7 @@ func _place(row: int, col: int) -> void:
 # ---------------------------------------------------------------- 结算
 
 ## 结束一局。winner: 1=黑 2=白 0=平局
-func _finish_round(winner: int, win_cells: Array[Vector2i]) -> void:
+func _finish_round(winner: int, win_cells: Array) -> void:
 	game_over = true
 	_ai_pending = false
 	_board_view.interactive = false
@@ -161,7 +166,7 @@ func _finish_round(winner: int, win_cells: Array[Vector2i]) -> void:
 	else:
 		Sfx.play_win()
 		_board_view.show_win(win_cells)
-		var stone_name := "黑棋" if winner == GomokuBoard.BLACK else "白棋"
+		var stone_name := "黑棋" if winner == BoardScript.BLACK else "白棋"
 		_turn_label.text = "%s胜利" % stone_name
 		_result_title.text = "%s胜利" % stone_name
 		_result_title.add_theme_color_override("font_color", Color(0.98, 0.86, 0.55))
@@ -205,7 +210,7 @@ func _process(delta: float) -> void:
 	if game_over:
 		return
 
-	var move := GomokuAI.choose_move(board, ai_color)
+	var move: Vector2i = AIScript.choose_move(board, ai_color)
 	if move.x < 0:
 		_finish_round(0, [])
 		return
@@ -236,7 +241,7 @@ func _on_undo_pressed() -> void:
 		board.undo_last()
 
 	# 重新确定轮到谁：偶数子轮到黑棋，奇数子轮到白棋
-	current_player = GomokuBoard.BLACK if board.history.size() % 2 == 0 else GomokuBoard.WHITE
+	current_player = BoardScript.BLACK if board.history.size() % 2 == 0 else BoardScript.WHITE
 	Sfx.play_undo()
 	_refresh_hud()
 	_board_view.interactive = true
@@ -248,9 +253,9 @@ func _on_undo_pressed() -> void:
 ## 回退一条比分记录。winner: 0=平局 1=黑 2=白
 func _revoke_score(winner: int) -> void:
 	match winner:
-		GomokuBoard.BLACK:
+		BoardScript.BLACK:
 			GameState.score_black = maxi(0, GameState.score_black - 1)
-		GomokuBoard.WHITE:
+		BoardScript.WHITE:
 			GameState.score_white = maxi(0, GameState.score_white - 1)
 		_:
 			GameState.score_draw = maxi(0, GameState.score_draw - 1)
@@ -258,7 +263,7 @@ func _revoke_score(winner: int) -> void:
 
 
 func _on_restart_pressed() -> void:
-	Sfx.play_place(GomokuBoard.BLACK)
+	Sfx.play_place(BoardScript.BLACK)
 	_start_new_round()
 
 
@@ -266,7 +271,7 @@ func _on_sound_pressed() -> void:
 	Sfx.enabled = not Sfx.enabled
 	GameState.sound_on = Sfx.enabled
 	if Sfx.enabled:
-		Sfx.play_place(GomokuBoard.BLACK)
+		Sfx.play_place(BoardScript.BLACK)
 	_refresh_hud()
 
 
