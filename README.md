@@ -3,18 +3,43 @@
 15×15 标准五子棋：双人对战 / 人机对战，无外部插件、无外部图片音频资源。
 木纹棋盘、星位、悬停预览、落子动画、胜利高亮、音效全部由代码生成。
 
+仓库地址：<https://github.com/Y-shi-R/gomoku>
+
+```
+git clone https://github.com/Y-shi-R/gomoku.git
+```
+
 ---
 
 ## 一、如何打开运行
 
-1. 打开 Godot 4.x（本项目在 **4.7.2-stable** 上验证）。
-2. 在启动器点「导入 / Import」，选目录 `E:\Godot\projects\五子棋\project.godot`。
-3. 点「运行项目 / Run Project」。
+### 方式 A：直接玩（Windows，无需安装 Godot）
 
-主场景：`res://scenes/main_menu.tscn`（已在 project.godot 中设置）。
-视口固定 900×1020，拉伸模式 `canvas_items` + `keep`，可自由缩放窗口不变形。
+拿到 `五子棋-Windows.zip` 后解压，双击 `五子棋.exe` 即可。
+（压缩包不在本仓库内，见下方「导出自己的可执行文件」自行生成。）
+
+### 方式 B：从源码运行（推荐用于开发）
+
+1. 把本项目克隆或下载到任意目录（路径随意，不含中文也可以）。
+2. 打开 Godot 4.x（本项目在 **4.7.2-stable** 上开发验证，4.2+ 应可运行）。
+3. 启动器点「**导入 / Import**」→ 选本项目根目录下的 **`project.godot`** → 「打开」。
+4. 按 **F5**（或点右上角「运行项目 / Run Project」）。
+
+主场景：`res://scenes/main_menu.tscn`（已在 project.godot 中设置，无需手动指定）。
+视口基准 900×1020，拉伸模式 `canvas_items` + `keep`，缩放窗口不变形。
+独立运行时 `ScreenFit` 会自动按屏幕大小等比缩放并居中，小屏笔记本也能完整显示。
 
 > 不需要任何外部字体文件：主题里用的是 Godot 内置 `SystemFont`，自动调用系统中文黑体（微软雅黑 / 苹方 / 思源黑体）。
+>
+> 首次在编辑器打开时，Godot 会自动生成 `.godot/` 缓存目录（已加入 `.gitignore`，属正常现象）。
+
+### 方式 C：导出自己的可执行文件
+
+1. 首次需安装导出模板：编辑器 → **编辑器 / Editor** → **管理导出模板 / Manage Export Templates** → 下载并安装对应版本。
+2. **项目 / Project** → **导出 / Export** → 选中已有的 `Windows Desktop` 预设 → **导出项目 / Export Project**。
+3. 输出到 `build/` 目录即可（该目录已在 `.gitignore` 中，不会提交）。
+
+> 本仓库已备好 `export_presets.cfg`，无需重新配置预设。
 
 ---
 
@@ -95,7 +120,8 @@ Game (Control)  ← 挂 scripts/game.gd
 │     │     ├─ TurnBox (HBoxContainer)
 │     │     │  ├─ TurnStone (Control)  ← 挂 scripts/turn_indicator.gd
 │     │     │  └─ TurnLabel (Label)    「黑棋回合 / 白棋思考中…」
-│     │     └─ ScoreLabel (Label)      「黑 0 · 平 0 · 白 0」
+│     │     ├─ ScoreLabel (Label)      「黑 0 · 平 0 · 白 0」
+│     │     └─ ModeLabel (Label)       「双人对战 / 人机对战 · 你执黑」
 │     ├─ BoardArea (CenterContainer)            棋盘居中
 │     │  └─ Board (Control)          ← 挂 scripts/board_view.gd
 │     └─ BottomBar (PanelContainer)  高 84     按钮栏
@@ -121,12 +147,18 @@ Game (Control)  ← 挂 scripts/game.gd
 |---|---|---|
 | `scripts/board_logic.gd` | `RefCounted`，`class_name GomokuBoard` | **纯逻辑层**。一维 `PackedInt32Array` 存 225 格；`place_stone()` / `undo_last()` / `check_winner()` / `is_draw()`。不碰任何绘制。 |
 | `scripts/ai_player.gd` | `RefCounted`，`class_name GomokuAI` | **AI 决策**。静态类，无状态，直接读传入的 board。 |
-| `scripts/board_view.gd` | `Control`，`class_name GomokuBoardView` | **表现层**。`_draw()` 画木板/木纹/网格/星位/棋子/预览/胜利高亮；处理鼠标悬停与点击；棋子落子缩放淡入动画。 |
+| `scripts/board_view.gd` | `Control`，`class_name GomokuBoardView`，`@tool` | **表现层**。`_draw()` 画木板/木纹/网格/星位/棋子/预览/胜利高亮；处理鼠标悬停与点击；棋子落子缩放淡入动画。 |
 | `scripts/game.gd` | `Control`（挂在 Game 根） | **对局控制器**。串联三层的流程：回合推进、胜负/平局结算、悔棋、重开、AI 调度、比分、结果面板。 |
 | `scripts/game_state.gd` | `Node`，**Autoload `GameState`** | 跨场景状态：模式、玩家执子颜色、累计比分、音效开关。 |
 | `scripts/sfx.gd` | `Node`，**Autoload `Sfx`** | 音效。运行时用正弦/噪声/琶音合成 `AudioStreamWAV`，8 个播放器轮转。 |
+| `scripts/screen_fit.gd` | `Node`，**Autoload `ScreenFit`** | 窗口自适应：启动时按屏幕可用区域等比缩放并居中，避免小屏超出屏幕。 |
 | `scripts/main_menu.gd` | `Control`（挂在 MainMenu 根） | 主菜单：模式/颜色选择、选中态高亮、跳转对局。 |
 | `scripts/turn_indicator.gd` | `Control`（`@tool`，挂在 TurnStone） | 顶部那颗小棋子图标，随回合切黑白，带呼吸缩放。 |
+
+> **关于跨脚本引用**：脚本间不靠 `class_name` 全局类相互引用，而是用
+> `const BoardScript := preload("res://scripts/board_logic.gd")` 这类常量。
+> 原因是 `class_name` 的注册信息存在 `.godot/` 缓存里，而这个目录不进版本库——
+> 全新克隆首次运行时尚无缓存，直接引用会报「未声明标识符」。改用 `preload` 后任何环境都能直接跑。
 
 ### 逻辑与表现分离具体做了什么
 
@@ -182,10 +214,12 @@ Game (Control)  ← 挂 scripts/game.gd
 ## 九、文件清单
 
 ```
-五子棋/
+（项目根目录，名称任意）
 ├─ project.godot
+├─ export_presets.cfg
 ├─ icon.svg
 ├─ README.md
+├─ 换电脑怎么玩.md
 ├─ scenes/
 │  ├─ main_menu.tscn
 │  └─ game.tscn
@@ -195,13 +229,19 @@ Game (Control)  ← 挂 scripts/game.gd
 │  ├─ board_view.gd
 │  ├─ game.gd
 │  ├─ game_state.gd
+│  ├─ screen_fit.gd
 │  ├─ main_menu.gd
 │  ├─ sfx.gd
 │  └─ turn_indicator.gd
-├─ themes/
-│  ├─ main_theme.tres
-│  └─ panel_result.tres
-└─ addons/godot_ai/        ← 编辑器插件，游戏本身不依赖，可整个删掉
+└─ themes/
+   ├─ main_theme.tres
+   └─ panel_result.tres
 ```
 
-> `addons/godot_ai` 只是开发时用来远程操纵编辑器的工具，删掉不影响游戏运行。
+以下内容**不进版本库**（已在 `.gitignore` 中排除）：
+
+| 排除项 | 原因 |
+|---|---|
+| `.godot/` | 编辑器导入缓存，体积大且可自动重建 |
+| `addons/` | 开发期使用的编辑器插件，游戏运行不依赖，删掉无影响 |
+| `build/`、`*.exe`、`*.zip` | 导出产物，单文件常超 GitHub 100 MB 限制 |
