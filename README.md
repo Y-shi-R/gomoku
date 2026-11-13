@@ -9,14 +9,33 @@
 git clone https://github.com/Y-shi-R/gomoku.git
 ```
 
+## 🎮 想直接玩？下载免安装版
+
+**→ [前往 Releases 下载](https://github.com/Y-shi-R/gomoku/releases/latest)**
+
+在 Release 页面的 **Assets** 里点 `五子棋-Windows.zip`（约 37 MB，Windows 10/11 64 位）。
+解压后双击 `五子棋.exe` 即可，无需安装 Godot 或任何运行库。
+
 ---
 
 ## 一、如何打开运行
 
 ### 方式 A：直接玩（Windows，无需安装 Godot）
 
-拿到 `五子棋-Windows.zip` 后解压，双击 `五子棋.exe` 即可。
-（压缩包不在本仓库内，见下方「导出自己的可执行文件」自行生成。）
+1. 打开 <https://github.com/Y-shi-R/gomoku/releases/latest>
+2. 在页面下方 **Assets** 区点 **`五子棋-Windows.zip`** 下载。
+3. 解压（Windows 自带的「全部解压缩」就够）。
+4. 双击 `五子棋.exe`，直接开玩。
+
+- 单文件自包含，游戏资源已打包进 exe，移动不会坏。
+- 首次运行 Windows 可能弹「已保护你的电脑」→ 点「**更多信息**」→「**仍要运行**」。
+  这是未签名 exe 的常规提示，不是病毒。
+- 窗口会按屏幕自动缩放并居中，1366×768 也能完整显示。
+
+> **为什么发布包在 Releases 而不在仓库里？**
+> 编译后的 exe 约 104 MB（超 GitHub 单文件 100 MB 上限），zip 也有 37 MB。
+> 若提交进 git，每次发版都会在历史里永久多存一份，仓库迅速膨胀。
+> 因此二进制走 Releases 附件，仓库只保留源码。
 
 ### 方式 B：从源码运行（推荐用于开发）
 
@@ -37,9 +56,11 @@ git clone https://github.com/Y-shi-R/gomoku.git
 
 1. 首次需安装导出模板：编辑器 → **编辑器 / Editor** → **管理导出模板 / Manage Export Templates** → 下载并安装对应版本。
 2. **项目 / Project** → **导出 / Export** → 选中已有的 `Windows Desktop` 预设 → **导出项目 / Export Project**。
-3. 输出到 `build/` 目录即可（该目录已在 `.gitignore` 中，不会提交）。
+3. 输出到 `build/` 目录即可。
 
 > 本仓库已备好 `export_presets.cfg`，无需重新配置预设。
+> 注意：`build/` 整个目录已被 `.gitignore` 排除，导出产物不会进 git。
+> 要发布给别人，把 zip 传到你自己的 GitHub Releases 上。
 
 ---
 
@@ -220,6 +241,7 @@ Game (Control)  ← 挂 scripts/game.gd
 ├─ icon.svg
 ├─ README.md
 ├─ 换电脑怎么玩.md
+├─ .gitignore
 ├─ scenes/
 │  ├─ main_menu.tscn
 │  └─ game.tscn
@@ -238,10 +260,46 @@ Game (Control)  ← 挂 scripts/game.gd
    └─ panel_result.tres
 ```
 
+> `build/` 目录仅在本地存在（导出产物），不进仓库。
+> 免安装包在 **[Releases](https://github.com/Y-shi-R/gomoku/releases)** 页面下载。
+
 以下内容**不进版本库**（已在 `.gitignore` 中排除）：
 
 | 排除项 | 原因 |
 |---|---|
 | `.godot/` | 编辑器导入缓存，体积大且可自动重建 |
 | `addons/` | 开发期使用的编辑器插件，游戏运行不依赖，删掉无影响 |
-| `build/`、`*.exe`、`*.zip` | 导出产物，单文件常超 GitHub 100 MB 限制 |
+| `build/`、`*.exe`、`*.pck`、`*.zip` | 二进制产物；exe 达 104 MB 超 GitHub 单文件 100 MB 上限，且写进 git 历史会让仓库持续膨胀。发布包改走 Releases 附件 |
+
+---
+
+## 十、发版流程（给仓库维护者）
+
+本项目**不把二进制提交进 git**，发布新版本按下述步骤：
+
+1. **改代码 → 提交 → 推送**
+   ```bash
+   git add -A
+   git commit -m "feat: 某功能"
+   git push
+   ```
+2. **在 Godot 里重新导出**
+   项目 → 导出 → `Windows Desktop` → 导出到 `build/五子棋.exe`
+3. **打包**
+   ```bash
+   Compress-Archive -Path build/五子棋.exe -DestinationPath build/五子棋-Windows.zip -Force
+   ```
+4. **打 tag 并推送**
+   ```bash
+   git tag -a v1.0.1 -m "v1.0.1"
+   git push origin v1.0.1
+   ```
+5. **在 GitHub 创建 Release 并上传 zip**
+   网页：仓库 → **Releases** → **Draft a new release** → 选 tag → 写说明 → 拖入 zip 到 Assets → **Publish release**
+
+   或命令行（需 `gh` CLI）：
+   ```bash
+   gh release create v1.0.1 build/五子棋-Windows.zip --title "v1.0.1" --notes "更新说明"
+   ```
+
+> 版本号建议遵循 [语义化版本](https://semver.org/lang/zh-CN/)：修 bug 用 `v1.0.1`，加功能用 `v1.1.0`，不兼容变更用 `v2.0.0`。
